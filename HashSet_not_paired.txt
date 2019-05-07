@@ -1,0 +1,30 @@
+ /**
+     * Returns a HashSet of reads where both reads are not properly paired
+     */
+    public HashSet listNonProperlyPairedReadsUnmappedFromBam(File bamFile)
+    {
+        HashSet<String> unmappedReads = new HashSet<>();
+
+        final SamReader reader = SamReaderFactory.makeDefault().open(bamFile);
+        //USE SamReaderFactory
+        for (final SAMRecord samRecord : reader)
+        {
+            //is it paired
+            boolean isPaired = samRecord.getReadPairedFlag();
+            //if it is paired
+            if (isPaired)
+            {
+                //is the read unmapped?
+                boolean properlyPaired = samRecord.getProperPairFlag();
+                //if it is...
+                if (properlyPaired == false)
+                {
+                    //add it to the list
+                    unmappedReads.add(samRecord.getReadName());
+                }
+            }
+        }
+
+        System.out.println("Found " + unmappedReads.size() + " non-properly paired reads");
+        return unmappedReads;
+    }

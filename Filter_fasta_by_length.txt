@@ -1,0 +1,24 @@
+    /**
+     * Filters a fasta file by length
+     */
+    public void filterFastaByLength(File fastaIn, File fastaOut, int minLength) throws IOException, BioException
+    {
+        FileWriter fw = new FileWriter(fastaOut.getAbsoluteFile());
+        String newLine = System.getProperty("line.separator");
+        FileInputStream inStream = new FileInputStream(fastaIn);
+        FastaReader<DNASequence, NucleotideCompound> fastaReader = new FastaReader<>(inStream,
+                                                                                     new GenericFastaHeaderParser<DNASequence, NucleotideCompound>(),
+                                                                                     new DNASequenceCreator(DNACompoundSet.getDNACompoundSet()));
+        LinkedHashMap<String, DNASequence> b = fastaReader.process();
+        for (Entry<String, DNASequence> entry : b.entrySet())
+        {
+            //System.out.println(entry.getValue().getOriginalHeader() + "=" + entry.getValue().getSequenceAsString());
+            if (entry.getValue().getSequenceAsString().length() >= minLength)
+            {
+                fw.write(">" + entry.getValue().getOriginalHeader() + newLine + entry.getValue().getSequenceAsString() + newLine);
+            }
+        }
+        fw.close();
+    }
+
+}
